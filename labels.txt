@@ -1,2 +1,0 @@
-label_0
-label_1
