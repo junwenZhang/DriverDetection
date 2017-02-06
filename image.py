@@ -17,19 +17,25 @@ image_width = 640
 nb_classes = 10
 batch_size = 1
 nb_epoch = 5
-
+number_labels = 2
 def load_train():
     X_train = []
     y_train = []
+    label = {}
+
     heights = pd.read_csv('heights.csv')
     print('Read train images')
     for index, row in heights.iterrows():
-        image_path = os.path.join('images', 'train', str(int(row['img'])) + '.jpg')
-        img = cv2.resize(cv2.imread(image_path, cv2.CV_LOAD_IMAGE_COLOR), (image_height, image_width) ).astype(np.float32)
-        img = img.transpose((2,0,1))
-        X_train.append(img)
-        y_train.append( [ row['height'] ] )
-    #print('size of xtrain ',X_train, 'size of Y ', y_train )
+    	label[int(row['height'])] = int(row['img'])
+
+    for class_name in range(0,number_labels):
+	    for index in range(1, label[class_name]+1):
+	    	folder_name = "label"+ str(class_name)
+	        image_path = os.path.join('images', 'train', str(folder_name), str(index) + '.jpg')
+	        img = cv2.resize(cv2.imread(image_path, cv2.CV_LOAD_IMAGE_COLOR), (image_height, image_width) ).astype(np.float32)
+	        img = img.transpose((2,0,1))
+	        X_train.append(img)
+	        y_train.append( [ '0' ] )
     Y_train = np_utils.to_categorical(y_train, nb_classes)
     return X_train, Y_train
 
@@ -72,6 +78,7 @@ def train_model(X_train, Y_train):
 	model = create_model()
 	X_train = np.array(X_train)
 	X_valid = np.array(X_valid)
+	print(len(X_train), " SIZE ", len(X_valid))
 	model.fit(X_train, y_train, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data=(X_valid, y_valid) )
 	score = model.evaluate(X_valid, y_valid, verbose=0)
 	print('Test score:', score[0])
