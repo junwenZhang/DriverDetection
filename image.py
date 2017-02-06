@@ -69,8 +69,9 @@ def create_model():
 
 def train_model(X_train, Y_train):
 	X_train, X_valid, y_train, y_valid = train_test_split(X_train, Y_train, test_size=0.33, random_state=42)
-	print('Y VALIDATION ', len(y_train))
 	model = create_model()
+	X_train = np.array(X_train)
+	X_valid = np.array(X_valid)
 	model.fit(X_train, y_train, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data=(X_valid, y_valid) )
 	score = model.evaluate(X_valid, y_valid, verbose=0)
 	print('Test score:', score[0])
